@@ -107,6 +107,5 @@ void BUZZ() {
 	}
 	turnOnDisplay(); //digitalWrite(LED_pin, !digitalRead(LED_pin));
 	toggle = false;
-
 }
 
