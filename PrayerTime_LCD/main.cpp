@@ -55,11 +55,7 @@ void loop() {
 
 		//lcd.print(freeRam());
 	}
-
-	//digitalWrite(LED_pin, !digitalRead(LED_pin));   // turn the LED on (HIGH is the voltage level)
 	Alarm.delay(1000); // wait one second between clock display
-	//digitalWrite(LED_pin, !digitalRead(LED_pin));    // turn the LED off by making the voltage LOW
-	//delay();               // wait for a second
 }
 
 int main(void) {
