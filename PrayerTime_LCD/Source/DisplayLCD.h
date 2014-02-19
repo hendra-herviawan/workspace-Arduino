@@ -11,12 +11,12 @@
 #include "main.h"
 #include <LiquidCrystal/LiquidCrystal.h>
 
-const uint8_t LCDBacklight_pin = 11;
-volatile boolean LCD_status = true;
-volatile time_t LCD_timer = 0;
+#define LCDBacklight_pin 10
+#define CONTRAST 20
+#define LCD_maxTime 1
 
-const uint8_t CONTRAST = 20;
-const uint8_t LCD_maxTime = 1;
+volatile boolean DisplayLCD_State = true;
+volatile time_t LCD_timer = 0;
 
 // initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(10, 9, 5, 6, 7, 8);
@@ -37,13 +37,13 @@ void turnOnDisplay() {
 
 	lcd.display();
 	analogWrite(LCDBacklight_pin, CONTRAST);
-	LCD_status = true;
+	DisplayLCD_State = true;
 }
 
 void turnOffDisplay() {
 	lcd.noDisplay();
 	analogWrite(LCDBacklight_pin, 0);
-	LCD_status = false;
+	DisplayLCD_State = false;
 	LCD_timer = 0;
 }
 

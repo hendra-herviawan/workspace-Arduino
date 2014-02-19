@@ -39,42 +39,51 @@ void read_state() {
 	key_state = 0;
 	y = analogRead(0);
 	//lcd.setCursor(10,1);
-	if (y < 100) {
-		//lcd.print ("Right ");
+	if (y < 10) {
+		//Serial.println ("Right ");
 		key_state = 1;
-	} else if (y < 200) {
-		//lcd.print ("Up    ");
+	} else if (y < 100) {
+		//Serial.println ("Up    ");
 		key_state = 2;
-	} else if (y < 400) {
-		//lcd.print ("Down  ");
-		key_state = 3;
-	} else if (y < 600) {
-		//lcd.print ("Left  ");
-		key_state = 4;
-	} else if (y < 800) {
-		//lcd.print ("Select");
+		//} else if (y < 400) {
+		//Serial.println ("Down  ");
+		//key_state = 3;
+	} else if (y < 130) {
+		//Serial.println ("Select  ");
 		key_state = 5;
 		sel = 1;
+	} else if (y < 160) {
+		//Serial.println ("Left");
+		key_state = 4;
 	}
+
+	//Serial.println (y);
 
 }
 
 //
 void process_display() {
 
-	if (LCD_status) {
-		lcd.home();
-		double prayerTime = getPrayerTime(nextPrayer, now());
-		uint8_t hours, minutes;
-		doubleToHrMin(prayerTime, hours, minutes);
-		lcd.print(getPrayerName(nextPrayer));
-		lcd.print(" ");
-		digitalClockDisplay(hours, minutes, 0);
-
-		lcd.setCursor(0, 2);
-		digitalClockDisplay(hour(), minute(), second());
-
-		//lcd.print(freeRam());
+	if (DisplayLCD_State) {
+		switch (menu_state) {
+		case Menu0_MainMenu:
+			Menu0.DisplayMenu(lcd, right);
+			break;
+		case 1: //right
+			right = right + 1;
+			break;
+		case 2: //up
+			up = up + 1;
+			break;
+		case 3: //down
+			up = up - 1;
+			break;
+		case 4: //left
+			right = right - 1;
+			break;
+		case 5:
+			break;
+		}
 	}
 }
 
@@ -91,7 +100,6 @@ void setup() {
 	/* Setup the interrupt pin */
 	//pinMode(interrupt_pin, INPUT);
 	//attachInterrupt(0, pin2Interrupt, FALLING);
-
 	//Setup Display UI
 	globalDisplayUISetup();
 
@@ -117,18 +125,20 @@ void loop() {
 		process_display();
 		//delay(45);
 		time_1 = millis();
-	} else if (menu_state == 0) {
+	} else if (menu_state == Menu0_MainMenu) {
 		process_display(); // If Menu0, update display event without key_State
 	}
 
 	time = time_2 - time_1;
 	time = time / 1000;
 	if (time >= 10) {
-		pinMode(LCDBacklight_pin, OUTPUT);
-		LCD_status = false;
+		turnOffDisplay();
+		//pinMode(LCDBacklight_pin, OUTPUT);
+		//DisplayLCD_State = false;
 	} else {
-		pinMode(LCDBacklight_pin, INPUT);
-		LCD_status = true;
+		turnOnDisplay();
+		//pinMode(LCDBacklight_pin, INPUT);
+		//DisplayLCD_State = true;
 	}
 
 	Alarm.delay(90); // wait one second between clock display

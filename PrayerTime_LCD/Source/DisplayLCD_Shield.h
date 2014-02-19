@@ -15,9 +15,8 @@
 #define CONTRAST 20
 #define LCD_maxTime 1
 
-volatile boolean LCD_status = true;
+volatile boolean DisplayLCD_State = true;
 volatile time_t LCD_timer = 0;
-
 
 // initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
@@ -34,18 +33,22 @@ void globalDisplayUISetup() {
 /////////////////////////////////////////////////////////////////////////////
 
 void turnOnDisplay() {
-	LCD_timer = millis();
+	if (!DisplayLCD_State) {
+		LCD_timer = millis();
 
-	lcd.display();
-	analogWrite(LCDBacklight_pin, CONTRAST);
-	LCD_status = true;
+		lcd.display();
+		analogWrite(LCDBacklight_pin, CONTRAST);
+		DisplayLCD_State = true;
+	}
 }
 
 void turnOffDisplay() {
-	lcd.noDisplay();
-	analogWrite(LCDBacklight_pin, 0);
-	LCD_status = false;
-	LCD_timer = 0;
+	if (DisplayLCD_State) {
+		lcd.noDisplay();
+		analogWrite(LCDBacklight_pin, 0);
+		DisplayLCD_State = false;
+		LCD_timer = 0;
+	}
 }
 
 void lcdTimer() {
@@ -78,7 +81,7 @@ void digitalClockDisplay(uint8_t hour, uint8_t minute, uint8_t second) {
 	if (second != 0)
 		printDigits(second);
 
-	lcdTimer();
+	//lcdTimer();
 }
 
 #endif /* DisplayLCD_Shield_H_ */

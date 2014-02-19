@@ -11,14 +11,15 @@
 #include <avr/power.h>
 
 #include <arduino.h>
+#include "DebugHelp.h"
 
 #include "Time.h"
 #include "TimeAlarms.h"
 #include "PrayerTime.h"
-
-#include "DebugHelp.h"
-#include "DisplayLCD_Shield.h"
 #include "Azan.h"
+
+#include "DisplayLCD_Shield.h"
+#include "LCDMenu0.h"
 
 #define LED_pin 12
 #define BUZZ_pin 13
@@ -29,12 +30,12 @@
 volatile boolean toggle = false;
 
 uint8_t y;
-uint8_t menu_state = 0, key_state = 0;
-uint8_t right=0,left=0,up=0,down=0;
-uint8_t sel=0;
+int8_t menu_state = 0, key_state = 0;
+int8_t right=0,left=0,up=0,down=0;
+int8_t sel=0;
 unsigned long up_time_1,up_time_2,up_time;
 double time_1,time_2,time;
-uint8_t last_st=0,st=0;
+int8_t last_st=0,st=0;
 
 //LCD Menu State
 #define Menu0_MainMenu 0
