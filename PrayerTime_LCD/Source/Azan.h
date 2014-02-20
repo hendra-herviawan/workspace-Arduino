@@ -15,18 +15,18 @@
 typedef uint8_t prayer_t;
 
 #define Fajr	0
-#define Zuhr	1
-#define Asr		2
-#define Maghrib	3
-#define Isha	4
-#define SunRise	5
+#define SunRise	1
+#define Zuhr	2
+#define Asr		3
+#define Maghrib	4
+#define Isha	5
 
 const char PrayerString0 [] = "Fajr";
-const char PrayerString1 [] = "Zuhr";
-const char PrayerString2 [] = "Asr";
-const char PrayerString3 [] = "Mhrib";
-const char PrayerString4 [] = "Isha";
-const char PrayerString5 [] = "SunRise";
+const char PrayerString1 [] = "SunRise";
+const char PrayerString2 [] = "Zuhr";
+const char PrayerString3 [] = "Asr";
+const char PrayerString4 [] = "Mhrib";
+const char PrayerString5 [] = "Isha";
 
 const double ihtiyati = 0.034;
 const time_t tommorow = 86400;
@@ -279,6 +279,8 @@ double getPrayerTime(prayer_t prayer, time_t value) {
 	switch (prayer) {
 	case Fajr:
 		return fajr+ihtiyati;
+	case SunRise:
+		return sunRise+ihtiyati;
 	case Zuhr:
 		return zuhr+ihtiyati;
 	case Asr:
@@ -287,8 +289,6 @@ double getPrayerTime(prayer_t prayer, time_t value) {
 		return maghrib+ihtiyati;
 	case Isha:
 		return isha+ihtiyati;
-	case SunRise:
-		return sunRise+ihtiyati;
 	}
 
 	return 0.0; // prayer not defined
@@ -299,15 +299,15 @@ const char* getPrayerName(prayer_t prayer){
 	switch (prayer) {
 	case Fajr:
 		return PrayerString0;
-	case Zuhr:
-		return PrayerString1;
-	case Asr:
-		return PrayerString2;
-	case Maghrib:
-		return PrayerString3;
-	case Isha:
-		return PrayerString4;
 	case SunRise:
+		return PrayerString1;
+	case Zuhr:
+		return PrayerString2;
+	case Asr:
+		return PrayerString3;
+	case Maghrib:
+		return PrayerString4;
+	case Isha:
 		return PrayerString5;
 	}
 
