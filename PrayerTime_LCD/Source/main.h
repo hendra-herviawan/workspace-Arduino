@@ -11,22 +11,36 @@
 #include <avr/power.h>
 
 #include <arduino.h>
+#include "DebugHelp.h"
 
 #include "Time.h"
 #include "TimeAlarms.h"
 #include "PrayerTime.h"
-
-#include "DebugHelp.h"
-#include "DisplayUI.h"
 #include "Azan.h"
 
-const uint8_t LED_pin = 12;
-const uint8_t BUZZ_pin = 13;
-const uint8_t interrupt_pin = 2;
+#include "DisplayLCD_Shield.h"
+#include "LCDMenu0.h"
+
+#define LED_pin 12
+#define BUZZ_pin 13
+#define interrupt_pin 2
+#define BUZZ_Duration 1
+
 
 volatile boolean toggle = false;
 
-const uint8_t BUZZ_Duration = 1;
+uint8_t y;
+int8_t menu_state = 0, key_state = 0;
+int8_t right=0,left=0,up=0,down=0;
+int8_t sel=0;
+unsigned long up_time_1,up_time_2,up_time;
+double time_1,time_2,time;
+int8_t last_st=0,st=0;
+
+//LCD Menu State
+#define Menu0_MainMenu 0
+#define Menu1_SettingMenu 1
+
 /////////////////////////////////////////////////////////////////////////////
 
 void pin2Interrupt(void);
@@ -46,4 +60,11 @@ void implement_power_saving_hacks() {
 	//PORTB |= B0011111;
 
 	}
+
+void get_up_time(){
+
+  up_time_2 = millis();
+  up_time = up_time_2 - up_time_1;
+  up_time = up_time/1000;        //time in seconds
+}
 #endif /* MAIN_H_ */

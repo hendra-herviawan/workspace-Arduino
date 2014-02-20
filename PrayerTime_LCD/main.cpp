@@ -14,9 +14,82 @@
 
 #include "main.h"
 
+void process_state() {
+
+	switch (key_state) {
+	case 1: //right
+		right = right + 1;
+		break;
+	case 2: //up
+		up = up + 1;
+		break;
+	case 3: //down
+		up = up - 1;
+		break;
+	case 4: //left
+		right = right - 1;
+		break;
+	case 5:
+		break;
+	}
+}
+
+void read_state() {
+
+	key_state = 0;
+	y = analogRead(0);
+	//lcd.setCursor(10,1);
+	if (y < 10) {
+		//Serial.println ("Right ");
+		key_state = 1;
+	} else if (y < 100) {
+		//Serial.println ("Up    ");
+		key_state = 2;
+		//} else if (y < 400) {
+		//Serial.println ("Down  ");
+		//key_state = 3;
+	} else if (y < 130) {
+		//Serial.println ("Select  ");
+		key_state = 5;
+		sel = 1;
+	} else if (y < 160) {
+		//Serial.println ("Left");
+		key_state = 4;
+	}
+
+	//Serial.println (y);
+
+}
+
+//
+void process_display() {
+
+	if (DisplayLCD_State) {
+		switch (menu_state) {
+		case Menu0_MainMenu:
+			Menu0.DisplayMenu(lcd, right);
+			break;
+		case 1: //right
+			right = right + 1;
+			break;
+		case 2: //up
+			up = up + 1;
+			break;
+		case 3: //down
+			up = up - 1;
+			break;
+		case 4: //left
+			right = right - 1;
+			break;
+		case 5:
+			break;
+		}
+	}
+}
+
 // the setup routine runs once when you press reset:
 void setup() {
-	implement_power_saving_hacks();
+	//implement_power_saving_hacks();
 
 	Serial.begin(9600);
 
@@ -25,37 +98,50 @@ void setup() {
 	pinMode(BUZZ_pin, OUTPUT);
 
 	/* Setup the interrupt pin */
-	pinMode(interrupt_pin, INPUT);
-	attachInterrupt(0, pin2Interrupt, FALLING);
-
+	//pinMode(interrupt_pin, INPUT);
+	//attachInterrupt(0, pin2Interrupt, FALLING);
 	//Setup Display UI
 	globalDisplayUISetup();
 
 	//Setup Azan
 	globalAzanSetup();
 
+	//Setup Display Timer
+	up_time_1 = millis();
+	time_1 = millis();
+
 }
 
 // the loop routine runs over and over again forever:
 void loop() {
 	//digitalClockDisplay(hour(), minute());
+	time_2 = millis();
+	last_st = key_state;
+	read_state();
+	st = key_state;
 
-	if (LCD_status) {
-		lcd.home();
-		double prayerTime = getPrayerTime(nextPrayer, now());
-		uint8_t hours, minutes;
-		doubleToHrMin(prayerTime, hours, minutes);
-		lcd.print(getPrayerName(nextPrayer));
-		lcd.print(" ");
-		digitalClockDisplay(hours, minutes, 0);
-
-
-		lcd.setCursor(0, 2);
-		digitalClockDisplay(hour(), minute(), second());
-
-		//lcd.print(freeRam());
+	if (st != last_st) {
+		process_state();
+		process_display();
+		//delay(45);
+		time_1 = millis();
+	} else if (menu_state == Menu0_MainMenu) {
+		process_display(); // If Menu0, update display event without key_State
 	}
-	Alarm.delay(1000); // wait one second between clock display
+
+	time = time_2 - time_1;
+	time = time / 1000;
+	if (time >= 10) {
+		turnOffDisplay();
+		//pinMode(LCDBacklight_pin, OUTPUT);
+		//DisplayLCD_State = false;
+	} else {
+		turnOnDisplay();
+		//pinMode(LCDBacklight_pin, INPUT);
+		//DisplayLCD_State = true;
+	}
+
+	Alarm.delay(90); // wait one second between clock display
 }
 
 int main(void) {
@@ -66,24 +152,6 @@ int main(void) {
 		loop();
 
 	return 0; // not reached
-}
-
-
-void pin2Interrupt(void) {
-	Serial.println(F("Interrup!!!"));
-
-	/* This will bring us back from sleep. */
-	if (alarm_status) {
-		toggle = true;
-		return ;
-	}
-
-	if (LCD_status){
-		turnOffDisplay();
-	} else {
-		turnOnDisplay();
-	}
-
 }
 
 void BUZZ() {
@@ -105,3 +173,19 @@ void BUZZ() {
 	toggle = false;
 }
 
+/*void pin2Interrupt(void) {
+ Serial.println(F("Interrup!!!"));
+
+ This will bring us back from sleep.
+ if (alarm_status) {
+ toggle = true;
+ return ;
+ }
+
+ if (LCD_status){
+ turnOffDisplay();
+ } else {
+ turnOnDisplay();
+ }
+
+ }*/
