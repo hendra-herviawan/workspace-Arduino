@@ -245,7 +245,7 @@ double getNextPrayer(time_t value){
 			timezone, fajrTwilight, ishaTwilight, fajr, sunRise, zuhr, asr,
 			maghrib, isha);
 
-	if (hours >= isha)
+	if ((hours >= isha) || (hours <= Fajr))
 		return Fajr;
 
 	//if (hours <= Fajr)
@@ -266,7 +266,7 @@ double getNextPrayer(time_t value){
 	if (hours <= isha)
 		return Isha;
 
-	return -1;
+	return 0;
 }
 
 double getPrayerTime(prayer_t prayer, time_t value) {
