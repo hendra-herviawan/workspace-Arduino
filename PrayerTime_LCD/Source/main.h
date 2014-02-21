@@ -20,6 +20,7 @@
 
 #include "DisplayLCD_Shield.h"
 #include "LCDMenu0.h"
+#include "LCDMenu1.h"
 
 #define LED_pin 12
 #define BUZZ_pin 13

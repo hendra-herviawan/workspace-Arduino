@@ -43,16 +43,16 @@ void read_state() {
 		//Serial.println ("Right ");
 		key_state = 1;
 	} else if (y < 100) {
-		//Serial.println ("Up    ");
+		//Serial.println ("Down    ");
+		key_state = 3;
+	} else if (y < 150) {
+		//Serial.println ("Up  ");
 		key_state = 2;
-		//} else if (y < 400) {
-		//Serial.println ("Down  ");
-		//key_state = 3;
-	} else if (y < 130) {
+	} else if (y < 215) {
 		//Serial.println ("Select  ");
 		key_state = 5;
 		sel = 1;
-	} else if (y < 160) {
+	} else if (y < 225) {
 		//Serial.println ("Left");
 		key_state = 4;
 	}
@@ -66,23 +66,21 @@ void process_display() {
 
 	if (DisplayLCD_State) {
 		switch (menu_state) {
-		case Menu0_MainMenu:
-			Menu0.DisplayMenu(lcd, right);
+		case Menu0_MainMenu: {
+			if (sel != 1) {
+				Menu0.DisplayMenu(lcd, right);
+			} else {
+				menu_state = Menu1_SettingMenu;
+				Menu1.DisplayClear(lcd);
+				sel = 0;
+			}
 			break;
-		case 1: //right
-			right = right + 1;
+		}
+		case Menu1_SettingMenu: {
+			Menu1.DisplayMenu(lcd, right);
 			break;
-		case 2: //up
-			up = up + 1;
-			break;
-		case 3: //down
-			up = up - 1;
-			break;
-		case 4: //left
-			right = right - 1;
-			break;
-		case 5:
-			break;
+		}
+
 		}
 	}
 }
@@ -133,6 +131,11 @@ void loop() {
 	time = time / 1000;
 	if (time >= 10) {
 		turnOffDisplay();
+		menu_state = 0;
+		key_state = 0;
+		right = 0, left = 0;
+		up = 0, down = 0;
+		sel = 0;
 		//pinMode(LCDBacklight_pin, OUTPUT);
 		//DisplayLCD_State = false;
 	} else {
