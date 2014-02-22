@@ -14,17 +14,35 @@
 class LCDMenu1 {
 private:
 public:
-	void DisplayMenu(LiquidCrystal &lcd,  int8_t &key_Right);
+	void DisplayMenu(LiquidCrystal &lcd,  int8_t &key_UpDown);
 	void DisplayClear(LiquidCrystal &lcd);
 };
 
 extern LCDMenu1 Menu1;
 LCDMenu1 Menu1 = LCDMenu1();
 
-inline void LCDMenu1::DisplayMenu(LiquidCrystal& lcd, int8_t& key_Right) {
+inline void LCDMenu1::DisplayMenu(LiquidCrystal& lcd, int8_t& key_UpDown) {
+	if (key_UpDown > 2 )
+		key_UpDown = 2;
+	else if (key_UpDown < 1 )
+		key_UpDown = 1;
+
 	lcd.home();
 	lcd.print("Setting");
-	Serial.println("Setting");
+	lcd.setCursor(0, 2);
+	lcd.print("                ");
+
+	lcd.setCursor(0, 2);
+	switch (key_UpDown) {
+	case 1: //right
+		lcd.print("1.Tgl dan Waktu");
+		break;
+	case 2: //up
+		lcd.print("2.Lokasi");
+		break;
+	}
+
+	//Serial.println("Setting");
 }
 
 inline void LCDMenu1::DisplayClear(LiquidCrystal &lcd) {

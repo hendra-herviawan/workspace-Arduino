@@ -10,7 +10,7 @@
 
 #include "main.h"
 
-int freeRam() ;
+int freeRam();
 void serialDateDisplay(uint8_t year, uint8_t month, uint8_t day);
 void serialClockDisplay(uint8_t hour, uint8_t minute);
 void serialPrintDigits(uint8_t digits);
@@ -22,32 +22,29 @@ int freeRam() {
 	return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
 }
 
+void serialDateDisplayX(int16_t year, uint8_t month, uint8_t day) {
+	// digital clock display of the time
 
-void serialDateDisplay(uint8_t year, uint8_t month, uint8_t day)
-{
-  // digital clock display of the time
-  Serial.print(year);
-  serialPrintDigits(month);
-  serialPrintDigits(day);
-  Serial.println();
+	Serial.print(year);
+	serialPrintDigits(month);
+	serialPrintDigits(day);
+
+	Serial.println();
 }
 
-void serialClockDisplay(uint8_t hour, uint8_t minute)
-{
-  // digital clock display of the time
-  Serial.print(hour);
-  serialPrintDigits(minute);
-  serialPrintDigits(0);
-  Serial.println();
+void serialClockDisplay(uint8_t hour, uint8_t minute) {
+	// digital clock display of the time
+	Serial.print(hour);
+	serialPrintDigits(minute);
+	serialPrintDigits(0);
+	Serial.println();
 }
 
-void serialPrintDigits(uint8_t digits)
-{
-  Serial.print(":");
-  if(digits < 10)
-    Serial.print('0');
-  Serial.print(digits);
+void serialPrintDigits(uint8_t digits) {
+	Serial.print(":");
+	if (digits < 10)
+		Serial.print('0');
+	Serial.print(digits);
 }
-
 
 #endif /* DEBUGHELP_H_ */

@@ -56,15 +56,9 @@ double getNextPrayer(time_t value);
 
 void BUZZ();
 
-/////////////////////////////////////////////////////////////////
 void globalAzanSetup() {
 
-	setTime(0,0,0,19,2,2014);
-/*	setSyncProvider(RTC.get);   // the function to get the time from the RTC
-	if (timeStatus() != timeSet)
-		Serial.println(F("Unable to sync with the RTC"));
-	else
-		Serial.println(F("RTC has set the system time"));*/
+	serialDateDisplayX( year(), month(), day());
 
 	Alarm.freeAll();
 	Alarm.alarmRepeat(0, 0, 0, globalAzanSetup);

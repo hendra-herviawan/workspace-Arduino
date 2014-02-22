@@ -84,4 +84,17 @@ void digitalClockDisplay(uint8_t hour, uint8_t minute, uint8_t second) {
 	//lcdTimer();
 }
 
+void ClearDisplay() {
+	lcd.clear();
+}
+
+void ClearFirstLine() {
+	lcd.home();
+	lcd.print("                ");
+}
+
+void ClearSecondLine() {
+	lcd.home();
+	lcd.print("                ");
+}
 #endif /* DisplayLCD_Shield_H_ */

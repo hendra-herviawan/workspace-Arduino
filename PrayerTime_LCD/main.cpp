@@ -18,16 +18,16 @@ void process_state() {
 
 	switch (key_state) {
 	case 1: //right
-		right = right + 1;
+		RightLeft = RightLeft + 1;
 		break;
 	case 2: //up
-		up = up + 1;
+		UpDown = UpDown + 1;
 		break;
 	case 3: //down
-		up = up - 1;
+		UpDown = UpDown - 1;
 		break;
 	case 4: //left
-		right = right - 1;
+		RightLeft = RightLeft - 1;
 		break;
 	case 5:
 		break;
@@ -56,7 +56,8 @@ void read_state() {
 		//Serial.println ("Left");
 		key_state = 4;
 	}
-
+	if (key_state != 0)
+		delay(45);
 	//Serial.println (y);
 
 }
@@ -66,45 +67,107 @@ void process_display() {
 
 	if (DisplayLCD_State) {
 		switch (menu_state) {
-		case Menu0_MainMenu: {
-			if (sel != 1) {
-				Menu0.DisplayMenu(lcd, right);
+		case Menu0_MainMenu:
+			if (sel == 0) {
+// TODO BUG #1 - Setelah setting, waktu sholat (line 1) tidak update
+				Menu0.DisplayMenu(lcd, UpDown);
 			} else {
+				resetKeyState();
 				menu_state = Menu1_SettingMenu;
-				Menu1.DisplayClear(lcd);
-				sel = 0;
+				ClearDisplay();
+				Menu1.DisplayMenu(lcd, UpDown);
 			}
 			break;
-		}
-		case Menu1_SettingMenu: {
-			Menu1.DisplayMenu(lcd, right);
-			break;
-		}
+		case Menu1_SettingMenu:
+			if (sel == 0)
+				Menu1.DisplayMenu(lcd, UpDown);
+			else {
+				ClearDisplay();
 
+				if (UpDown == 1) {
+					resetKeyState();
+					menu_state = 2;
+					Menu2.setDate(day(), month(), year());
+					Menu2.DisplayChangeDate(lcd, UpDown, RightLeft);
+				} else if (UpDown == 2) {
+					resetKeyState();
+					menu_state = 3;
+				}
+			}
+
+			break;
+		case 2:
+			if (sel == 0)
+				if (Menu2.getConfirmation() != true)
+					Menu2.DisplayChangeDate(lcd, UpDown, RightLeft);
+				else
+					Menu2.DisplayConfirmation(lcd, UpDown);
+			else {
+
+				if (Menu2.getConfirmation() == false) {
+					resetKeyState();
+					menu_state = 2;
+
+					ClearDisplay();
+					Menu2.setConfirmation(true);
+					Menu2.DisplayConfirmation(lcd, UpDown);
+				} else {
+					if (UpDown == 1) {
+						int8_t dd = Menu2.getDd();
+						int8_t mm = Menu2.getMm();
+						int16_t yy = Menu2.getYy();
+
+						serialDateDisplayX( yy, mm, dd);
+						setTime(0,0,0, dd,mm,yy);
+						globalAzanSetup();
+						//menu_state = Menu0_MainMenu;
+					}
+					Menu2.setConfirmation(false);
+					resetKeyState();
+				}
+			}
+			break;
+		case 3:
+			resetKeyState();
+			break;
 		}
 	}
 }
 
+/////////////////////////////////////////////////////////////////
+void    setArduinoTime(int hr,int min,int sec,int day, int month, int yr) {
+	setTime(hr,min,sec,day,month,yr);
+
+	/*	setSyncProvider(RTC.get);   // the function to get the time from the RTC
+		if (timeStatus() != timeSet)
+			Serial.println(F("Unable to sync with the RTC"));
+		else
+			Serial.println(F("RTC has set the system time"));
+	*/
+}
+
 // the setup routine runs once when you press reset:
 void setup() {
-	//implement_power_saving_hacks();
+//implement_power_saving_hacks();
 
 	Serial.begin(9600);
 
-	// initialize the digital pin as an output.
+// initialize the digital pin as an output.
 	pinMode(LED_pin, OUTPUT);
 	pinMode(BUZZ_pin, OUTPUT);
 
-	/* Setup the interrupt pin */
-	//pinMode(interrupt_pin, INPUT);
-	//attachInterrupt(0, pin2Interrupt, FALLING);
-	//Setup Display UI
+/* Setup the interrupt pin */
+//pinMode(interrupt_pin, INPUT);
+//attachInterrupt(0, pin2Interrupt, FALLING);
+
+//Setup Display UI
 	globalDisplayUISetup();
 
-	//Setup Azan
+//Setup Azan
+	setArduinoTime(0,0,0,23,2,2014);
 	globalAzanSetup();
 
-	//Setup Display Timer
+//Setup Display Timer
 	up_time_1 = millis();
 	time_1 = millis();
 
@@ -112,7 +175,7 @@ void setup() {
 
 // the loop routine runs over and over again forever:
 void loop() {
-	//digitalClockDisplay(hour(), minute());
+//digitalClockDisplay(hour(), minute());
 	time_2 = millis();
 	last_st = key_state;
 	read_state();
@@ -121,7 +184,6 @@ void loop() {
 	if (st != last_st) {
 		process_state();
 		process_display();
-		//delay(45);
 		time_1 = millis();
 	} else if (menu_state == Menu0_MainMenu) {
 		process_display(); // If Menu0, update display event without key_State
@@ -131,11 +193,8 @@ void loop() {
 	time = time / 1000;
 	if (time >= 10) {
 		turnOffDisplay();
-		menu_state = 0;
-		key_state = 0;
-		right = 0, left = 0;
-		up = 0, down = 0;
-		sel = 0;
+		resetKeyState();
+
 		//pinMode(LCDBacklight_pin, OUTPUT);
 		//DisplayLCD_State = false;
 	} else {

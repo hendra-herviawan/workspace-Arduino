@@ -21,6 +21,7 @@
 #include "DisplayLCD_Shield.h"
 #include "LCDMenu0.h"
 #include "LCDMenu1.h"
+#include "LCDMenu2.h"
 
 #define LED_pin 12
 #define BUZZ_pin 13
@@ -32,7 +33,7 @@ volatile boolean toggle = false;
 
 uint8_t y;
 int8_t menu_state = 0, key_state = 0;
-int8_t right=0,left=0,up=0,down=0;
+int8_t RightLeft=0,left=0,UpDown=0,down=0;
 int8_t sel=0;
 unsigned long up_time_1,up_time_2,up_time;
 double time_1,time_2,time;
@@ -67,5 +68,13 @@ void get_up_time(){
   up_time_2 = millis();
   up_time = up_time_2 - up_time_1;
   up_time = up_time/1000;        //time in seconds
+}
+
+void resetKeyState(){
+	menu_state = 0;
+	key_state = 0;
+	RightLeft = 0;
+	UpDown = 0;
+	sel = 0;
 }
 #endif /* MAIN_H_ */
