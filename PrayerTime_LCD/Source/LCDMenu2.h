@@ -82,7 +82,6 @@ inline void LCDMenu2::DisplayChangeDate(LiquidCrystal &p_lcd, int8_t &p_UpDown,
 	if (p_RightLeft == 0) {
 		if (active_form != p_RightLeft) {
 			p_UpDown = dd;
-			Serial.println(1);
 		} else {
 			uint8_t maxdd = monthDays[mm-1]; // mm start from 1
 			if (p_UpDown > maxdd)

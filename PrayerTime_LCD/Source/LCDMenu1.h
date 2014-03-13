@@ -38,7 +38,7 @@ inline void LCDMenu1::DisplayMenu(LiquidCrystal& lcd, int8_t& key_UpDown) {
 		lcd.print("1.Tgl dan Waktu");
 		break;
 	case 2: //up
-		lcd.print("2.Lokasi");
+		lcd.print("2.Kembali");
 		break;
 	}
 

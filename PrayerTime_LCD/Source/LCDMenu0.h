@@ -19,9 +19,9 @@ LCDMenu0 Menu0 = LCDMenu0();
 inline void LCDMenu0::DisplayMenu(LiquidCrystal& lcd, int8_t &key_UpDown) {
 
 	if ((nextPrayer+key_UpDown) > 5)
-		key_UpDown = 0;
+		key_UpDown = -nextPrayer;
 	else if ((nextPrayer+key_UpDown) < 0)
-		key_UpDown = 5;
+		key_UpDown = 5-nextPrayer;
 
 	if (t_key_UpDown != key_UpDown){
 		ClearFirstLine() ;

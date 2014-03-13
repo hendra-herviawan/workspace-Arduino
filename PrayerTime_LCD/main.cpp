@@ -84,14 +84,16 @@ void process_display() {
 			else {
 				ClearDisplay();
 
-				if (UpDown == 1) {
+				if (UpDown == 1) { // Setting Tanggal & Waktu
 					resetKeyState();
 					menu_state = 2;
 					Menu2.setDate(day(), month(), year());
 					Menu2.DisplayChangeDate(lcd, UpDown, RightLeft);
-				} else if (UpDown == 2) {
+				} else if (UpDown == 2) { // Kembali ke menu utama
 					resetKeyState();
-					menu_state = 3;
+					//menu_state = 3;
+					//Menu3.setTime(hour(), minute());
+					//Menu3.DisplayChangeTime(lcd, UpDown, RightLeft);
 				}
 			}
 
@@ -117,33 +119,64 @@ void process_display() {
 						int8_t mm = Menu2.getMm();
 						int16_t yy = Menu2.getYy();
 
-						serialDateDisplayX( yy, mm, dd);
-						setTime(0,0,0, dd,mm,yy);
+						serialDateDisplayX(yy, mm, dd);
+						setTime(hour(), minute(), 0, dd, mm, yy);
 						globalAzanSetup();
-						//menu_state = Menu0_MainMenu;
+
+						resetKeyState();
+						menu_state = 3;
+
+						Menu3.setTime(hour(), minute());
+						Menu3.DisplayChangeTime(lcd, UpDown, RightLeft);
+					} else {
+						resetKeyState();
 					}
-					Menu2.setConfirmation(false);
-					resetKeyState();
 				}
 			}
 			break;
 		case 3:
-			resetKeyState();
+			if (sel == 0)
+				if (Menu3.getConfirmation() == false)
+					Menu3.DisplayChangeTime(lcd, UpDown, RightLeft);
+				else
+					Menu3.DisplayConfirmation(lcd, UpDown);
+			else {
+
+				if (Menu3.getConfirmation() == false) {
+					resetKeyState();
+					menu_state = 3;
+
+					ClearDisplay();
+					Menu3.setConfirmation(true);
+					Menu3.DisplayConfirmation(lcd, UpDown);
+				} else {
+					if (UpDown == 1) {
+						int8_t h = Menu3.getH();
+						int8_t m = Menu3.getM();
+
+						setTime(h, m, 0, day(), month(), year());
+						globalAzanSetup();
+						//menu_state = Menu0_MainMenu;
+					}
+					//Menu3.setConfirmation(false);
+					resetKeyState();
+				}
+			}
 			break;
 		}
 	}
 }
 
 /////////////////////////////////////////////////////////////////
-void    setArduinoTime(int hr,int min,int sec,int day, int month, int yr) {
-	setTime(hr,min,sec,day,month,yr);
+void setArduinoTime(int hr, int min, int sec, int day, int month, int yr) {
+	setTime(hr, min, sec, day, month, yr);
 
 	/*	setSyncProvider(RTC.get);   // the function to get the time from the RTC
-		if (timeStatus() != timeSet)
-			Serial.println(F("Unable to sync with the RTC"));
-		else
-			Serial.println(F("RTC has set the system time"));
-	*/
+	 if (timeStatus() != timeSet)
+	 Serial.println(F("Unable to sync with the RTC"));
+	 else
+	 Serial.println(F("RTC has set the system time"));
+	 */
 }
 
 // the setup routine runs once when you press reset:
@@ -156,15 +189,14 @@ void setup() {
 	pinMode(LED_pin, OUTPUT);
 	pinMode(BUZZ_pin, OUTPUT);
 
-/* Setup the interrupt pin */
+	/* Setup the interrupt pin */
 //pinMode(interrupt_pin, INPUT);
 //attachInterrupt(0, pin2Interrupt, FALLING);
-
 //Setup Display UI
 	globalDisplayUISetup();
 
 //Setup Azan
-	setArduinoTime(0,0,0,23,2,2014);
+	setArduinoTime(18, 50, 0, 23, 2, 2014);
 	globalAzanSetup();
 
 //Setup Display Timer
